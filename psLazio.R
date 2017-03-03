@@ -18,32 +18,61 @@ library(htmltab)
 url <- "https://www.regione.lazio.it/accessiprontosoccorso/"
 # ritardo in secondi
 delay<-300
+# contatore rilevazioni
 contatore<-as.numeric(c(1:6))
-ripetizioni<-6
-for (i in contatore) {
-   if (i<=ripetizioni) {
-      nome<-paste("pslazio",i,".csv",sep="")
-      table<-htmltab(doc = url, which="//*[@id='tab_right']/table" )
-      write.table(table, file=nome, sep=",")
-      Sys.sleep(delay)
+# Ripetizioni del ciclo di durata1C
+ripetizioni<-as.numeric(c(1:1))
+# Durata ciclo
+durata1C<-(length(contatore)*delay)/60
+ciclo<-paste("Durata un ciclo: ", durata1C," ore.", sep="")
+print(ciclo)
+durataRC<-(durata1C*length(ripetizioni))
+ripTot<-paste("Durata totale: ",durataRC," ore.",sep="")
+print(ripTot)
+# Ora di partenza
+ora<-0
+for (r in ripetizioni) {
+   if (r<=length(ripetizoni)) {
+      for (i in contatore) {
+         if (i<=length(contatore)) {
+            nome<-paste("pslazio",i,".csv",sep="")
+            table<-htmltab(doc = url, which="//*[@id='tab_right']/table" )
+            write.table(table, file=nome, sep=",")
+            Sys.sleep(delay)
+         }
+      }
+      for (i in contatore) {
+         if (i==1) {
+            nome<-paste("pslazio",i,".csv",sep="")
+            psLazioT<-read.csv(nome)
+         }   
+         else if (i<length(contatore) || i!=1) {
+            nome<-paste("pslazio",i,".csv",sep="")
+            psLazio<-read.csv(nome)
+            psLazioT<-rbind(psLazioT,psLazio)
+         }
+      }
+      psLazioBak<-psLazioT
+      ora<-ora+0.5
+      nomeFT<-paste("psLazioT",ora,".csv",sep="")
+      write.table(psLazioT, file=nomeFT, sep=",")
    }
 }
-
-for (i in contatore) {
-   if (i==1) {
-      nome<-paste("pslazio",i,".csv",sep="")
-      psLazioT<-read.csv(nome)
+ora<-0
+for (r in ripetizioni) {
+   if (r==1) {
+      ora<-ora+0.5
+      nomeFT<-paste("psLazioT",ora,".csv",sep="")
+      psLazioFT<-read.csv(nomeFT)
    }   
-   else if (i<ripetizioni || i!=1) {
-      nome<-paste("pslazio",i,".csv",sep="")
-      psLazio<-read.csv(nome)
-      psLazioT<-rbind(psLazioT,psLazio)
+   else if (i<length(ripetizioni) || r!=1) {
+      nomeFT<-paste("psLazioT",ora,".csv",sep="")
+      psLazioT<-read.csv(nomeFT)
+      psLazioFT<-rbind(psLazioFT,psLazioT)
    }
 }
 
-psLazioBak<-psLazioT
-
-psLazioT<-data.frame(psLazioT)
+psLazioT<-data.frame(psLazioFT)
 psLazioT[, c(7:12,14:19,21,23:27,29)] <- sapply(psLazioT[, c(7:12,14:19,21,23:27,29)], as.numeric)
 colnames(psLazioT)<-c("Struttura","Comune","Asl","Tipo","Aggiornamento","k6","RossoAt","GialloAt","VerdeAt","BiancoAt","NonAt","TotAt","k13","RossoTr","GialloTr","VerdeTr","BiancoTr","NonTr","TotTr","k20","AttesaRic","k22","RossoOs","GialloOs","VerdeOs","BiancoOs","TotOs","k28","TotTot")
 psLazioT3<-psLazioT[,c(-6,-13,-20,-22,-28)]
