@@ -17,9 +17,9 @@ box_office %>% html_node("form") %>% html_form()
 library(htmltab)
 url <- "https://www.regione.lazio.it/accessiprontosoccorso/"
 # ritardo in secondi
-delay<-3
-contatore<-as.numeric(c(1:5))
-ripetizioni<-5
+delay<-300
+contatore<-as.numeric(c(1:6))
+ripetizioni<-6
 for (i in contatore) {
    if (i<=ripetizioni) {
       nome<-paste("pslazio",i,".csv",sep="")
@@ -38,7 +38,6 @@ for (i in contatore) {
       nome<-paste("pslazio",i,".csv",sep="")
       psLazio<-read.csv(nome)
       psLazioT<-rbind(psLazioT,psLazio)
-      Sys.sleep(delay)
    }
 }
 
@@ -51,13 +50,13 @@ psLazioT3<-psLazioT[,c(-6,-13,-20,-22,-28)]
 psLazioT4<-psLazioT3[rowSums(is.na(psLazioT3))==0,]
 write.table(psLazioT4, file="psLazioTot.csv", sep=",")
 
-
 attach(psLazioT4)
 aggdata <-aggregate(psLazioT4, by=list(Struttura), 
                     FUN=mean, na.rm=TRUE)
 print(aggdata)
-detach(mtcars)
+detach(psLazioT4)
 
+################################################################################################
 
 
 psLazioDF2<-data.frame(ID=psLazioT4[,1], Means=rowMeans(psLazioT4[,7]))
