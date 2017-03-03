@@ -1,4 +1,7 @@
 # psDinamo
+
+Solo da riga 14 a 59.
+
 Imposta l'intervallo di aggiornamento.
 
 Imposta le ripetizioni.
