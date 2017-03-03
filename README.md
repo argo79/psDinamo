@@ -1,6 +1,6 @@
 # psDinamo
 
-Solo da riga 14 a 59.
+Solo da riga 14 a 88.
 
 Imposta l'intervallo di aggiornamento.
 
