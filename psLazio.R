@@ -72,3 +72,39 @@ for (r in ripetizioni) {
 
 psLazioBak<-psLazioFT
 write.table(psLazioFT,file="psLazioTot1.csv",sep=",")
+
+
+
+### legge il file di Alberto 
+library(plyr)
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+file<-"f:/anagrafe/psLaziotot.csv"
+ps <- read.csv(file, header = TRUE)
+ps$Aggiornamento<-as.character(ps$Aggiornamento)
+ps$data<-(substr(ps$Aggiornamento,1,10))
+ps$ora<-substr(ps$Aggiornamento,12,13)
+ps$minuti<-substr(ps$Aggiornamento,15,16)
+
+## per prova tiene solo struttura, aggiornamento e i valori
+dummy<-filter(ps,Asl=="RM1")
+dummy<-ps[,c(1,6:25,27)]
+
+dummyl<-melt(dummy,id=c("Struttura","data","minuti")) # per minuti perchè non esistono dati si più ore
+### dummyma<-acast (dummyl,n~variable) ## non usare 
+#prova a totalizzare per minuto (Anzichè ora)
+#prova a totalizzare per minuto (Anzichè ora)
+dummy.sum<-ddply(dummyl,c("Struttura","minuti","variable"), summarise, massimo=max(value),sd=sd(value))
+dummy.sum$massimo<-as.numeric(dummy.sum$massimo)
+dummy.sum$tipo=substr(dummy.sum$variable,nchar(as.character(dummy.sum$variable))-1,nchar(as.character(dummy.sum$variable)))
+## prova plot
+### tiene solo alcune variabili per comodità
+dummy.plot<-filter(dummy.sum,tipo=="At")
+dummy.plot.s<-ggplot(dummy.plot, aes(x=minuti, y=massimo, group=variable, colour=variable)) +
+   geom_point(size=1.0) + 
+   facet_wrap(~ Struttura , scales="fixed") +
+   ylab("num. max in attesa") + xlab("minuto") + 
+   theme (legend.title=element_blank()) +
+    geom_jitter() + 
+  scale_color_manual(values=c("red", "yellow", "green","white","blue","black"))
