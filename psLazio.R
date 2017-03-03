@@ -66,6 +66,7 @@ for (r in ripetizioni) {
       psLazioFT<-read.csv(nomeFT)
    }   
    else if (i<length(ripetizioni) || r!=1) {
+      ora<-ora+0.5
       nomeFT<-paste("psLazioT",ora,".csv",sep="")
       psLazioT<-read.csv(nomeFT)
       psLazioFT<-rbind(psLazioFT,psLazioT)
